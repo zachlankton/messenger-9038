@@ -7,6 +7,7 @@ import {
   setSearchedUsers,
 } from "../conversations";
 import { gotUser, setFetchingStatus } from "../user";
+import { setActiveMessage, setActiveChat } from "../activeConversation"
 
 axios.interceptors.request.use(async function (config) {
   const token = await localStorage.getItem("messenger-token");
@@ -82,6 +83,16 @@ const saveMessage = async (body) => {
   const { data } = await axios.post("/api/messages", body);
   return data;
 };
+
+export const setMessagesRead = (convoId, otherUserId) => async (dispatch) => {
+  try {
+    const { data } = await axios.post("/api/conversations/setAllRead", {convoId, otherUserId});
+    dispatch(gotConversations(data));
+    dispatch( setActiveChat( data.find(d => d.id === convoId ) ) )
+  } catch (error) {
+    console.log(error)
+  }
+}
 
 const sendMessage = (data, body) => {
   socket.emit("new-message", {

@@ -5,7 +5,7 @@ const onlineUsers = require("../../onlineUsers");
 
 // get all conversations for a user, include latest message text for preview, and all messages
 // include other user model so we have info on username/profile pic (don't include current user info)
-router.get("/", async (req, res, next) => {
+async function getAllConvos (req, res, next) {
   try {
     if (!req.user) {
       return res.sendStatus(401);
@@ -73,6 +73,30 @@ router.get("/", async (req, res, next) => {
     }
 
     res.json(conversations);
+  } catch (error) {
+    next(error);
+  }
+}
+
+router.get("/", getAllConvos)
+
+router.post("/setAllRead", async (req, res, next) => {
+  try {
+    if (!req.user) {
+      return res.sendStatus(401);
+    }
+
+    //const senderId = req.user.id;
+    const { convoId, otherUserId } = req.body;
+    const msg_update = await Message.update({messageRead: true}, {
+      where: {
+        conversationId: convoId,
+        senderId: otherUserId,
+        messageRead: false
+      }
+    })
+    getAllConvos(req, res, next)
+
   } catch (error) {
     next(error);
   }
