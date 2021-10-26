@@ -109,6 +109,15 @@ export const postMessage = (body) => async (dispatch) => {
   }
 };
 
+export const markMessagesRead = (convoId, otherUserId) => async (dispatch) => {
+  try {
+    const { data } = await axios.post("/api/conversations/markAllRead", { convoId, otherUserId });
+    dispatch(gotConversations(data));
+  } catch (error) {
+    console.log(error)
+  }
+}
+
 export const searchUsers = (searchTerm) => async (dispatch) => {
   try {
     const { data } = await axios.get(`/api/users/${searchTerm}`);
