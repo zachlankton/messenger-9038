@@ -1,10 +1,12 @@
 import axios from "axios";
 import socket from "../../socket";
+import { setActiveChat } from "../activeConversation";
 import {
   gotConversations,
   addConversation,
   setNewMessage,
   setSearchedUsers,
+  setMessagesRead
 } from "../conversations";
 import { gotUser, setFetchingStatus } from "../user";
 
@@ -111,8 +113,9 @@ export const postMessage = (body) => async (dispatch) => {
 
 export const markMessagesRead = (convoId, otherUserId) => async (dispatch) => {
   try {
-    const { data } = await axios.post("/api/conversations/markAllRead", { convoId, otherUserId });
-    dispatch(gotConversations(data));
+    await axios.patch("/api/conversations/message-read-status", { convoId, otherUserId });
+    dispatch(setMessagesRead(convoId, otherUserId))
+    socket.emit("messages-read", {convoId, otherUserId});
   } catch (error) {
     console.log(error)
   }

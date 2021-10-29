@@ -28,7 +28,7 @@ const Chat = (props) => {
   const unreadCount = countUnread(conversation)
 
   const handleClick = async (conversation) => {
-    await props.setActiveChat(conversation.otherUser.username);
+    await props.setActiveChat(conversation.otherUser.id);
     if (unreadCount > 0) props.markMessagesRead(conversation.id, otherUser.id)
   };
 
@@ -40,7 +40,7 @@ const Chat = (props) => {
         online={otherUser.online}
         sidebar={true}
       />
-      <ChatContent conversation={conversation} />
+      <ChatContent conversation={conversation} unread={unreadCount} />
       <UnReadMessages conversation={conversation} />
     </Box>
   );

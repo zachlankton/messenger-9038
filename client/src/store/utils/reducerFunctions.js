@@ -20,9 +20,10 @@ export const addMessageToStore = (state, payload) => {
     } else {
       return convo;
     }
-  }).sort( (a,b) =>getLastMessageDate(b) - getLastMessageDate(a) );
+  }).sort( (a,b) => getLastMessageDate(b) - getLastMessageDate(a) );
 
   function getLastMessageDate(convo){
+    if (convo.messages.length === 0) return 0
     return new Date(convo.messages.at(-1).createdAt)
   }
 };
@@ -78,6 +79,21 @@ export const addNewConvoToStore = (state, recipientId, message) => {
       convoCopy.id = message.conversationId;
       convoCopy.messages.push(message)
       convoCopy.latestMessageText = message.text;
+      return convoCopy;
+    } else {
+      return convo;
+    }
+  });
+};
+
+export const markMessagesRead = (state, {convoId, otherUserId} ) => {
+  return state.map((convo) => {
+    if (convo.id === convoId) {
+      const convoCopy = { ...convo };
+      convoCopy.messages = convoCopy.messages.map((msg)=>{
+        if (msg.senderId === otherUserId) msg.messageRead = true;
+        return msg
+      })
       return convoCopy;
     } else {
       return convo;
