@@ -79,4 +79,33 @@ router.get("/", async (req, res, next) => {
   }
 });
 
+router.patch("/message-read-status", async (req, res, next) => {
+  try {
+    if (!req.user) {
+      return res.sendStatus(401);
+    }
+
+    const { convoId, otherUserId } = req.body;
+    const userId = req.user.dataValues.id
+    
+    // if the conversation does not belong to the user making the request -> return 401
+    const { dataValues: convo } = await Conversation.findConversation(userId, otherUserId)
+    if (convo.id !== convoId){
+      return res.sendStatus(403);
+    }
+
+    await Message.update({messageRead: true}, {
+      where: {
+        conversationId: convoId,
+        senderId: otherUserId,
+        messageRead: false
+      }
+    })
+    res.json({success: true});
+
+  } catch (error) {
+    next(error);
+  }
+});
+
 module.exports = router;

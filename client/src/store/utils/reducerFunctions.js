@@ -8,6 +8,7 @@ export const addMessageToStore = (state, payload) => {
       messages: [message],
       latestMessageText: message.text
     };
+    newConvo.unreadCount = _countUnread(newConvo)
     return [newConvo, ...state];
   }
 
@@ -15,14 +16,16 @@ export const addMessageToStore = (state, payload) => {
     if (convo.id === message.conversationId) {
       const convoCopy = { ...convo }
       convoCopy.messages.push(message)
+      convoCopy.unreadCount = _countUnread(convoCopy)
       convoCopy.latestMessageText = message.text
       return convoCopy
     } else {
       return convo;
     }
-  }).sort( (a,b) =>getLastMessageDate(b) - getLastMessageDate(a) );
+  }).sort( (a,b) => getLastMessageDate(b) - getLastMessageDate(a) );
 
   function getLastMessageDate(convo){
+    if (convo.messages.length === 0) return 0
     return new Date(convo.messages.at(-1).createdAt)
   }
 };
@@ -77,6 +80,7 @@ export const addNewConvoToStore = (state, recipientId, message) => {
       const convoCopy = { ...convo };
       convoCopy.id = message.conversationId;
       convoCopy.messages.push(message)
+      convoCopy.unreadCount = _countUnread(convoCopy)
       convoCopy.latestMessageText = message.text;
       return convoCopy;
     } else {
@@ -84,3 +88,37 @@ export const addNewConvoToStore = (state, recipientId, message) => {
     }
   });
 };
+
+export const markMessagesRead = (state, {convoId, otherUserId} ) => {
+  return state.map((convo) => {
+    if (convo.id === convoId) {
+      const convoCopy = { ...convo };
+      convoCopy.messages = convoCopy.messages.map((msg)=>{
+        msg = { ...msg }
+        if (msg.senderId === otherUserId && msg.messageRead === false) {
+          msg.messageRead = true;
+        }
+        return msg
+      })
+      convoCopy.unreadCount = _countUnread(convoCopy)
+      return convoCopy;
+    } else {
+      return convo;
+    }
+  });
+};
+
+export const countUnread = (conversations) => {
+  return conversations.map( (convo) => {
+    convo.unreadCount = _countUnread(convo)
+    return convo
+  } )
+}
+
+const _countUnread = (convo) => convo.messages.reduce((count, msg) => {
+  if (!msg.messageRead && msg.senderId === convo.otherUser.id) {
+    return count += 1
+  } else {
+    return count
+  }
+}, 0)

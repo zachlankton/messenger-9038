@@ -5,14 +5,22 @@ import moment from "moment";
 
 const Messages = (props) => {
   const { messages, otherUser, userId } = props;
+  const lastReadMessage = messages.reduce((lastMsg, thisMsg) => {
+    if (thisMsg.senderId === userId && thisMsg.messageRead) {
+      return thisMsg
+    } else {
+      return lastMsg
+    }
+  }, { senderId: null })
 
   return (
     <Box>
       {messages.map((message) => {
         const time = moment(message.createdAt).format("h:mm");
-
+        const isThisLastMessageRead = lastReadMessage === message
         return message.senderId === userId ? (
-          <SenderBubble key={message.id} text={message.text} time={time} />
+          <SenderBubble key={message.id} text={message.text} time={time}
+            otherUser={isThisLastMessageRead ? otherUser : null} />
         ) : (
           <OtherUserBubble key={message.id} text={message.text} time={time} otherUser={otherUser} />
         );
