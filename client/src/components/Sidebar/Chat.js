@@ -4,7 +4,7 @@ import { BadgeAvatar, ChatContent } from "../Sidebar";
 import { makeStyles } from "@material-ui/core/styles";
 import { setActiveChat } from "../../store/activeConversation";
 import { connect } from "react-redux";
-import UnReadMessages, { countUnread } from "./UnReadMessages";
+import UnReadMessages from "./UnReadMessages";
 import { markMessagesRead } from "../../store/utils/thunkCreators";
 
 const useStyles = makeStyles((theme) => ({
@@ -25,7 +25,7 @@ const Chat = (props) => {
   const classes = useStyles();
   const { conversation } = props;
   const { otherUser } = conversation;
-  const unreadCount = countUnread(conversation)
+  const unreadCount = conversation.unreadCount
 
   const handleClick = async (conversation) => {
     await props.setActiveChat(conversation.otherUser.id);
@@ -41,7 +41,7 @@ const Chat = (props) => {
         sidebar={true}
       />
       <ChatContent conversation={conversation} unread={unreadCount} />
-      <UnReadMessages conversation={conversation} />
+      <UnReadMessages unreadCount={unreadCount} />
     </Box>
   );
 };

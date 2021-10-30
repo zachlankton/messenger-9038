@@ -4,7 +4,8 @@ import {
   addSearchedUsersToStore,
   removeOfflineUserFromStore,
   addMessageToStore,
-  markMessagesRead
+  markMessagesRead,
+  countUnread
 } from "./utils/reducerFunctions";
 
 // ACTIONS
@@ -76,12 +77,14 @@ export const addConversation = (recipientId, newMessage) => {
   };
 };
 
+
+
 // REDUCER
 
 const reducer = (state = [], action) => {
   switch (action.type) {
     case GET_CONVERSATIONS:
-      return action.conversations;
+      return countUnread(action.conversations);
     case SET_MESSAGE:
       return addMessageToStore(state, action.payload);
     case SET_MESSAGES_READ:

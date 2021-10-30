@@ -1,6 +1,5 @@
 import axios from "axios";
 import socket from "../../socket";
-import { setActiveChat } from "../activeConversation";
 import {
   gotConversations,
   addConversation,
@@ -117,7 +116,7 @@ export const markMessagesRead = (convoId, otherUserId) => async (dispatch) => {
     dispatch(setMessagesRead(convoId, otherUserId))
     socket.emit("messages-read", {convoId, otherUserId});
   } catch (error) {
-    console.log(error)
+    console.error(error)
   }
 }
 

@@ -91,7 +91,7 @@ router.patch("/message-read-status", async (req, res, next) => {
     // if the conversation does not belong to the user making the request -> return 401
     const { dataValues: convo } = await Conversation.findConversation(userId, otherUserId)
     if (convo.id !== convoId){
-      return res.sendStatus(401);
+      return res.sendStatus(403);
     }
 
     await Message.update({messageRead: true}, {
