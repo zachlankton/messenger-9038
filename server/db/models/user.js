@@ -16,10 +16,9 @@ const User = db.define("user", {
       isEmail: true
     }
   },
-  user_db_upgraded: {
-    type: Sequelize.BOOLEAN,
-    allowNull: false,
-    defaultValue: false,
+  user_db_version: {
+    type: Sequelize.STRING,
+    allowNull: true
   },
   photoUrl: {
     type: Sequelize.STRING
